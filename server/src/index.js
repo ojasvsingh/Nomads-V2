@@ -3,6 +3,7 @@ const cors = require('cors')
 require('dotenv').config()
 const authRoutes = require('./routes/auth')
 const memoryRoutes = require('./routes/memories')
+const mapRoutes = require('./routes/map')
 
 //create express app and accept requests from react app
 const app = express()
@@ -17,3 +18,4 @@ const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
 app.use('/api/memories', memoryRoutes)
+app.use('/api/map', mapRoutes)

@@ -29,22 +29,11 @@ model Memory {
   title       String
   description String?
   country     String
+  countryCode String
   visitedAt   DateTime
   photos      String[]
   isPublic    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-}
-
-model VisitedCountry {
-  id          Int      @id @default(autoincrement())
-  countryCode String
-  countryName String
-  createdAt   DateTime @default(now())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, countryCode])
-}
+  user       

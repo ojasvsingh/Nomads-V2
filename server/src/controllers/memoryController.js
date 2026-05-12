@@ -2,25 +2,34 @@ const prisma = require('../lib/prisma')
 
 //creates a new memory with country title and date, saves it to db with user id from the middleware auth
 exports.createMemory = async (req, res) => {
-    const { title, description, country, visitedAt, isPublic } = req.body
-    if (!title || !country || !visitedAt)
-        return res.status(400).json({ error: 'Title, country and date are required' })
+  const { title, description, country, countryCode, visitedAt, isPublic } = req.body
+  if (!title || !country || !countryCode || !visitedAt)
+    return res.status(400).json({ error: 'Title, country, country code and date are required' })
 
-    try {
-        const memory = await prisma.memory.create({
-            data: {
-                title,
-                description,
-                country,
-                visitedAt: new Date(visitedAt),
-                isPublic: isPublic || false,
-                userId: req.user.id
-            }
-        })
-        res.status(201).json(memory)
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' })
-    }
+  try {
+    const memory = await prisma.memory.create({
+      data: {
+        title,
+        description,
+        country,
+        countryCode,
+        visitedAt: new Date(visitedAt),
+        isPublic: isPublic || false,
+        userId: req.user.id
+      }
+    })
+
+    // auto mark country as visited
+    await prisma.visitedCountry.upsert({
+      where: { userId_countryCode: { userId: req.user.id, countryCode } },
+      update: {},
+      create: { countryCode, countryName: country, userId: req.user.id }
+    })
+
+    res.status(201).json(memory)
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' })
+  }
 }
 
 //gets all memories for a user

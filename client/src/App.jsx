@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import CreateMemory from './pages/CreateMemory'
 import Memories from './pages/Memories'
+import Map from './pages/Map'
 
 export default function App() {
   return (
@@ -26,6 +27,11 @@ export default function App() {
         <Route path="/memories" element={
           <ProtectedRoute>
             <Memories />
+          </ProtectedRoute>
+        } />
+        <Route path="/map" element={
+          <ProtectedRoute>
+            <Map />
           </ProtectedRoute>
         } />
       </Routes>
