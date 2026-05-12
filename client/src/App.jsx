@@ -3,6 +3,8 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import CreateMemory from './pages/CreateMemory'
+import Memories from './pages/Memories'
 
 export default function App() {
   return (
@@ -14,6 +16,16 @@ export default function App() {
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/memories/create" element={
+          <ProtectedRoute>
+            <CreateMemory />
+          </ProtectedRoute>
+        } />
+        <Route path="/memories" element={
+          <ProtectedRoute>
+            <Memories />
           </ProtectedRoute>
         } />
       </Routes>
