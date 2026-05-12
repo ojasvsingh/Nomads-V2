@@ -21,6 +21,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   memories     Memory[]
+  visitedCountries VisitedCountry[]
 }
 
 model Memory {
@@ -35,4 +36,15 @@ model Memory {
   updatedAt   DateTime @updatedAt
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
+}
+
+model VisitedCountry {
+  id          Int      @id @default(autoincrement())
+  countryCode String
+  countryName String
+  createdAt   DateTime @default(now())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, countryCode])
 }
