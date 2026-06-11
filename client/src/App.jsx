@@ -1,18 +1,20 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Header from './components/Header'
+import Navbar from './components/Navbar'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import CreateMemory from './pages/CreateMemory'
 import Memories from './pages/Memories'
+import Memory from './pages/Memory'
+import EditMemory from './pages/EditMemory'
 import Map from './pages/Map'
 
 export default function App() {
   return (
     //render the corresponding page based on the route
     <BrowserRouter>
-      <Header />
+      <Navbar />
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/login" element={<Login />} />
@@ -30,6 +32,16 @@ export default function App() {
         <Route path="/memories" element={
           <ProtectedRoute>
             <Memories />
+          </ProtectedRoute>
+        } />
+        <Route path="/memories/:id/edit" element={
+          <ProtectedRoute>
+            <EditMemory />
+          </ProtectedRoute>
+        } />
+        <Route path="/memories/:id" element={
+          <ProtectedRoute>
+            <Memory />
           </ProtectedRoute>
         } />
         <Route path="/map" element={

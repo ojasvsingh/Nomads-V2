@@ -1,0 +1,12 @@
+.memory-form-header {
+  margin-bottom: 24px;
+}
+
+.memory-form-subtitle {
+  color: var(--ink-light);
+  margin: 0;
+}
+
+.memory-form-card {
+  padding: 32px;
+}

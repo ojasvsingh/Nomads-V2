@@ -1,8 +1,8 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import './Header.css'
+import './Navbar.css'
 
-export default function Header() {
+export default function Navbar() {
   const token = useAuthStore((state) => state.token)
   const logout = useAuthStore((state) => state.logout)
   const navigate = useNavigate()
@@ -15,17 +15,20 @@ export default function Header() {
   const linkClass = ({ isActive }) => (isActive ? 'active' : '')
 
   return (
-    <header className="app-header">
-      <Link to={token ? '/dashboard' : '/login'} className="brand">Nomads</Link>
+    <header className="navbar">
+      <Link to={token ? '/dashboard' : '/login'} className="navbar-brand">
+        <span className="navbar-brand-icon" aria-hidden="true">🧭</span>
+        Nomads
+      </Link>
 
-      <nav className="app-nav">
+      <nav className="navbar-links">
         {token ? (
           <>
             <NavLink to="/dashboard" end className={linkClass}>Dashboard</NavLink>
             <NavLink to="/memories" end className={linkClass}>Memories</NavLink>
             <NavLink to="/memories/create" end className={linkClass}>New Memory</NavLink>
             <NavLink to="/map" end className={linkClass}>Map</NavLink>
-            <button className="logout-btn" onClick={handleLogout}>Logout</button>
+            <button className="btn btn-secondary btn-sm" onClick={handleLogout}>Logout</button>
           </>
         ) : (
           <>

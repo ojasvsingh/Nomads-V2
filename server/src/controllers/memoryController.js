@@ -2,7 +2,7 @@ const prisma = require('../lib/prisma')
 
 //creates a new memory with country title and date, saves it to db with user id from the middleware auth
 exports.createMemory = async (req, res) => {
-  const { title, description, country, countryCode, visitedAt, isPublic } = req.body
+  const { title, description, country, countryCode, visitedAt, photos, isPublic } = req.body
   if (!title || !country || !countryCode || !visitedAt)
     return res.status(400).json({ error: 'Title, country, country code and date are required' })
 
@@ -17,6 +17,7 @@ exports.createMemory = async (req, res) => {
         country,
         countryCode,
         visitedAt: new Date(visitedAt),
+        photos: photos || [],
         isPublic: isPublic || false,
         userId: req.user.id
       }
@@ -78,7 +79,7 @@ exports.getMemory = async (req, res) => {
 
 //updates a memory based on the id of the memory and user
 exports.updateMemory = async (req, res) => {
-  const { title, description, country, visitedAt, isPublic } = req.body
+  const { title, description, country, countryCode, visitedAt, photos, isPublic } = req.body
   try {
     const memory = await prisma.memory.findUnique({
       where: { id: parseInt(req.params.id) }
@@ -92,8 +93,26 @@ exports.updateMemory = async (req, res) => {
 
     const updated = await prisma.memory.update({
       where: { id: parseInt(req.params.id) },
-      data: { title, description, country, visitedAt: visitedAt ? new Date(visitedAt) : undefined, isPublic }
+      data: {
+        title,
+        description,
+        country,
+        countryCode,
+        visitedAt: visitedAt ? new Date(visitedAt) : undefined,
+        photos,
+        isPublic
+      }
     })
+
+    // keep the visited-countries list in sync if the country changed
+    if (countryCode) {
+      await prisma.visitedCountry.upsert({
+        where: { userId_countryCode: { userId: req.user.id, countryCode } },
+        update: {},
+        create: { countryCode, countryName: country, userId: req.user.id }
+      })
+    }
+
     res.json(updated)
   } catch (err) {
     res.status(500).json({ error: 'Server error' })
