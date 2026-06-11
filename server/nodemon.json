@@ -1,4 +1,5 @@
 {
   "watch": ["src"],
   "ext": "js",
-  "ig
+  "ignore": ["node_modules"]
+}
