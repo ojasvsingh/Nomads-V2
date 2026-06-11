@@ -6,6 +6,9 @@ exports.createMemory = async (req, res) => {
   if (!title || !country || !countryCode || !visitedAt)
     return res.status(400).json({ error: 'Title, country, country code and date are required' })
 
+  if (new Date(visitedAt) > new Date())
+    return res.status(400).json({ error: 'Visit date cannot be in the future' })
+
   try {
     const memory = await prisma.memory.create({
       data: {
@@ -71,9 +74,12 @@ exports.updateMemory = async (req, res) => {
     if (memory.userId !== req.user.id)
       return res.status(403).json({ error: 'Not authorized' })
 
+    if (visitedAt && new Date(visitedAt) > new Date())
+      return res.status(400).json({ error: 'Visit date cannot be in the future' })
+
     const updated = await prisma.memory.update({
       where: { id: parseInt(req.params.id) },
-      data: { title, description, country, visitedAt: new Date(visitedAt), isPublic }
+      data: { title, description, country, visitedAt: visitedAt ? new Date(visitedAt) : undefined, isPublic }
     })
     res.json(updated)
   } catch (err) {
