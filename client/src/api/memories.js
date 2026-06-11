@@ -13,6 +13,7 @@ API.interceptors.request.use((config) => {
 
 export const createMemory = (data) => API.post('/memories', data)
 export const getMemories = () => API.get('/memories')
+export const getMemoriesByCountry = (countryCode) => API.get(`/memories/country/${encodeURIComponent(countryCode)}`)
 export const getMemory = (id) => API.get(`/memories/${id}`)
 export const updateMemory = (id, data) => API.put(`/memories/${id}`, data)
 export const deleteMemory = (id) => API.delete(`/memories/${id}`)

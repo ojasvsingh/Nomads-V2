@@ -48,6 +48,19 @@ exports.getMemories = async (req, res) => {
     }
 }
 
+//gets all memories for a user filtered by country code
+exports.getMemoriesByCountry = async (req, res) => {
+    try {
+        const memories = await prisma.memory.findMany({
+            where: { userId: req.user.id, countryCode: req.params.countryCode },
+            orderBy: { visitedAt: 'desc' }
+        })
+        res.json(memories)
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' })
+    }
+}
+
 //gets a single memory by id. makes sure the id in the memory matches the user id
 exports.getMemory = async (req, res) => {
   try {
