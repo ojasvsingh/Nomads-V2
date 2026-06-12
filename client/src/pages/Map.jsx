@@ -15,6 +15,7 @@ export default function Map() {
   const [countryMemories, setCountryMemories] = useState([])
   const [memoriesLoading, setMemoriesLoading] = useState(false)
   const [memoriesError, setMemoriesError] = useState(null)
+  const [tooltip, setTooltip] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -67,6 +68,18 @@ export default function Map() {
     setMemoriesError(null)
   }
 
+  const showTooltip = (geo, evt) => {
+    const countryCode = nameToAlpha3(geo.properties.name)
+    setTooltip({
+      name: geo.properties.name,
+      visited: visitedCountries.includes(countryCode),
+      x: evt.clientX,
+      y: evt.clientY
+    })
+  }
+
+  const hideTooltip = () => setTooltip(null)
+
   return (
     <div className="map-page">
       <div className="map-header">
@@ -82,7 +95,13 @@ export default function Map() {
       </div>
 
       <div className="map-canvas">
-        <ComposableMap projectionConfig={{ scale: 150 }}>
+        <ComposableMap
+          projection="geoNaturalEarth1"
+          projectionConfig={{ scale: 175, center: [0, 20] }}
+          width={980}
+          height={500}
+          style={{ width: '100%', height: 'auto' }}
+        >
           <Geographies geography={GEO_URL}>
             {({ geographies }) =>
               geographies.map((geo) => {
@@ -93,22 +112,27 @@ export default function Map() {
                     key={geo.rsmKey}
                     geography={geo}
                     onClick={() => handleCountryClick(geo)}
+                    onMouseEnter={(evt) => showTooltip(geo, evt)}
+                    onMouseMove={(evt) => showTooltip(geo, evt)}
+                    onMouseLeave={hideTooltip}
                     style={{
                       default: {
                         fill: isVisited ? '#d9a05b' : '#3d4f63',
-                        stroke: '#1c2733',
-                        strokeWidth: 0.5,
+                        stroke: 'rgba(247, 239, 223, 0.18)',
+                        strokeWidth: 0.6,
                         outline: 'none'
                       },
                       hover: {
                         fill: isVisited ? '#c17f3e' : '#56697e',
-                        stroke: '#1c2733',
-                        strokeWidth: 0.5,
+                        stroke: 'rgba(247, 239, 223, 0.5)',
+                        strokeWidth: 1,
                         outline: 'none',
                         cursor: 'pointer'
                       },
                       pressed: {
                         fill: '#a8503a',
+                        stroke: 'rgba(247, 239, 223, 0.5)',
+                        strokeWidth: 1,
                         outline: 'none'
                       }
                     }}
@@ -118,6 +142,15 @@ export default function Map() {
             }
           </Geographies>
         </ComposableMap>
+
+        {tooltip && (
+          <div className="map-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
+            <span className="map-tooltip-name">{tooltip.name}</span>
+            <span className="map-tooltip-status">
+              {tooltip.visited ? '✓ Visited' : 'Click to mark as visited'}
+            </span>
+          </div>
+        )}
       </div>
 
       {panelCountry && (
