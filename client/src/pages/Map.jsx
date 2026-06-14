@@ -11,10 +11,12 @@ const TOTAL_COUNTRIES = 195
 
 export default function Map() {
   const [visitedCountries, setVisitedCountries] = useState([])
-  const [panelCountry, setPanelCountry] = useState(null)
+  const [selectedCountry, setSelectedCountry] = useState(null)
+  const [actionMenuPos, setActionMenuPos] = useState(null)
   const [countryMemories, setCountryMemories] = useState([])
   const [memoriesLoading, setMemoriesLoading] = useState(false)
   const [memoriesError, setMemoriesError] = useState(null)
+  const [removeBlocked, setRemoveBlocked] = useState(false)
   const [tooltip, setTooltip] = useState(null)
   const navigate = useNavigate()
 
@@ -30,43 +32,85 @@ export default function Map() {
     fetchCountries()
   }, [])
 
-  const handleCountryClick = async (geo) => {
+  const handleCountryClick = async (geo, evt) => {
+    evt.stopPropagation()
     const countryCode = nameToAlpha3(geo.properties.name)
     const countryName = geo.properties.name
 
-    // already visited -> open the memories panel for this country
-    if (visitedCountries.includes(countryCode)) {
-      setPanelCountry({ code: countryCode, name: countryName })
-      setCountryMemories([])
-      setMemoriesError(null)
-      setMemoriesLoading(true)
-      try {
-        const res = await getMemoriesByCountry(countryCode)
-        setCountryMemories(res.data)
-      } catch (err) {
-        setMemoriesError('Failed to load memories')
-      } finally {
-        setMemoriesLoading(false)
+    setSelectedCountry({ code: countryCode, name: countryName })
+    setActionMenuPos({ x: evt.clientX, y: evt.clientY })
+    setRemoveBlocked(false)
+    setTooltip(null)
+
+    setCountryMemories([])
+    setMemoriesError(null)
+    setMemoriesLoading(true)
+    try {
+      const res = await getMemoriesByCountry(countryCode)
+      setCountryMemories(res.data)
+    } catch (err) {
+      setMemoriesError('Failed to load memories')
+    } finally {
+      setMemoriesLoading(false)
+    }
+  }
+
+  const handleAddToVisited = async () => {
+    if (!selectedCountry || visitedCountries.includes(selectedCountry.code)) return
+    try {
+      const res = await toggleCountry({ countryCode: selectedCountry.code, countryName: selectedCountry.name })
+      if (res.data.visited) {
+        setVisitedCountries((prev) => [...prev, selectedCountry.code])
       }
+    } catch (err) {
+      console.error('Failed to mark country as visited', err)
+    }
+  }
+
+  const handleRemoveFromVisited = async () => {
+    if (!selectedCountry || !visitedCountries.includes(selectedCountry.code)) return
+
+    if (countryMemories.length > 0) {
+      setRemoveBlocked(true)
       return
     }
 
-    // not visited -> mark it as visited
     try {
-      const res = await toggleCountry({ countryCode, countryName })
-      if (res.data.visited) {
-        setVisitedCountries((prev) => [...prev, countryCode])
+      const res = await toggleCountry({ countryCode: selectedCountry.code, countryName: selectedCountry.name })
+      if (!res.data.visited) {
+        setVisitedCountries((prev) => prev.filter((code) => code !== selectedCountry.code))
       }
     } catch (err) {
-      console.error('Failed to toggle country', err)
+      console.error('Failed to remove country from visited', err)
     }
   }
 
+  const handleCreateMemory = () => {
+    if (!selectedCountry) return
+    navigate('/memories/create', {
+      state: { countryCode: selectedCountry.code, countryName: selectedCountry.name }
+    })
+  }
+
   const closePanel = () => {
-    setPanelCountry(null)
+    setSelectedCountry(null)
+    setActionMenuPos(null)
     setCountryMemories([])
     setMemoriesError(null)
+    setRemoveBlocked(false)
   }
+
+  useEffect(() => {
+    if (!selectedCountry) return
+
+    const handleClickOutside = (evt) => {
+      if (evt.target.closest('.map-action-menu') || evt.target.closest('.map-panel')) return
+      closePanel()
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [selectedCountry])
 
   const showTooltip = (geo, evt) => {
     const countryCode = nameToAlpha3(geo.properties.name)
@@ -80,12 +124,14 @@ export default function Map() {
 
   const hideTooltip = () => setTooltip(null)
 
+  const isSelectedVisited = selectedCountry ? visitedCountries.includes(selectedCountry.code) : false
+
   return (
     <div className="map-page">
       <div className="map-header">
         <div>
           <h1>My Travel Map</h1>
-          <p className="map-subtitle">Click a country to mark it visited, or revisit your memories there.</p>
+          <p className="map-subtitle">Click a country to mark it visited, add a memory, or remove it from your list.</p>
         </div>
         <div className="map-counter">
           <span className="map-counter-value">{visitedCountries.length}</span>
@@ -111,7 +157,7 @@ export default function Map() {
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    onClick={() => handleCountryClick(geo)}
+                    onClick={(evt) => handleCountryClick(geo, evt)}
                     onMouseEnter={(evt) => showTooltip(geo, evt)}
                     onMouseMove={(evt) => showTooltip(geo, evt)}
                     onMouseLeave={hideTooltip}
@@ -147,21 +193,52 @@ export default function Map() {
           <div className="map-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
             <span className="map-tooltip-name">{tooltip.name}</span>
             <span className="map-tooltip-status">
-              {tooltip.visited ? '✓ Visited' : 'Click to mark as visited'}
+              {tooltip.visited ? '✓ Visited' : 'Not visited yet'}
             </span>
+          </div>
+        )}
+
+        {selectedCountry && actionMenuPos && (
+          <div className="map-action-menu" style={{ left: actionMenuPos.x, top: actionMenuPos.y }}>
+            <div className="map-action-menu-title">
+              {getFlagEmoji(selectedCountry.code)} {selectedCountry.name}
+            </div>
+            <button
+              className="map-action-btn"
+              onClick={handleAddToVisited}
+              disabled={isSelectedVisited}
+            >
+              {isSelectedVisited ? '✓ Visited' : 'Add to Visited'}
+            </button>
+            <button className="map-action-btn" onClick={handleCreateMemory}>
+              Create Memory
+            </button>
+            <button
+              className="map-action-btn map-action-btn-danger"
+              onClick={handleRemoveFromVisited}
+              disabled={!isSelectedVisited}
+            >
+              Remove from Visited
+            </button>
+            {removeBlocked && (
+              <p className="map-action-warning">
+                This country has {countryMemories.length} {countryMemories.length === 1 ? 'memory' : 'memories'}.
+                Delete {countryMemories.length === 1 ? 'it' : 'them'} first before removing this country from your visited list.
+              </p>
+            )}
           </div>
         )}
       </div>
 
-      {panelCountry && (
+      {selectedCountry && (
         <div className="map-panel card">
           <button className="map-panel-close" onClick={closePanel} aria-label="Close panel">&times;</button>
-          <h2>{getFlagEmoji(panelCountry.code)} {panelCountry.name}</h2>
+          <h2>{getFlagEmoji(selectedCountry.code)} {selectedCountry.name}</h2>
 
           {memoriesLoading && <p>Loading memories…</p>}
           {memoriesError && <p className="error-text">{memoriesError}</p>}
           {!memoriesLoading && !memoriesError && countryMemories.length === 0 && (
-            <p className="map-panel-empty">No memories yet for {panelCountry.name}.</p>
+            <p className="map-panel-empty">No memories yet for {selectedCountry.name}.</p>
           )}
 
           <div className="map-panel-memories">
