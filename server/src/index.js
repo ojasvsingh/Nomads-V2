@@ -4,6 +4,7 @@ require('dotenv').config()
 const authRoutes = require('./routes/auth')
 const memoryRoutes = require('./routes/memories')
 const mapRoutes = require('./routes/map')
+const exploreRoutes = require('./routes/explore')
 
 //create express app and accept requests from react app
 const app = express()
@@ -19,3 +20,4 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
 app.use('/api/memories', memoryRoutes)
 app.use('/api/map', mapRoutes)
+app.use('/api/explore', exploreRoutes)
