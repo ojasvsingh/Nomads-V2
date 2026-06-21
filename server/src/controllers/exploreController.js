@@ -25,9 +25,28 @@ Give a clear, structured trip plan: suggested countries/cities, rough duration, 
       messages: [{ role: 'user', content: message }]
     })
 
-    res.json({ reply: response.content[0].text })
+    const reply = response.content[0].text
+
+    await prisma.exploreSession.create({
+      data: { prompt: message, reply, userId: req.user.id }
+    })
+
+    res.json({ reply })
   } catch (err) {
     console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+}
+
+exports.getExploreHistory = async (req, res) => {
+  try {
+    const sessions = await prisma.exploreSession.findMany({
+      where: { userId: req.user.id },
+      orderBy: { createdAt: 'desc' }
+    })
+    res.json(sessions)
+  } catch (err) {
+    console.error('getExploreHistory error:', err)
     res.status(500).json({ error: 'Server error' })
   }
 }

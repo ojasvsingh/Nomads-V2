@@ -20,8 +20,9 @@ model User {
   isPrivate    Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  memories     Memory[]
+  memories         Memory[]
   visitedCountries VisitedCountry[]
+  exploreSessions  ExploreSession[]
 }
 
 model Memory {
@@ -37,6 +38,15 @@ model Memory {
   updatedAt   DateTime @updatedAt
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
+}
+
+model ExploreSession {
+  id        Int      @id @default(autoincrement())
+  prompt    String
+  reply     String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model VisitedCountry {

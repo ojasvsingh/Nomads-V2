@@ -25,8 +25,69 @@
   margin-bottom: 20px;
 }
 
+.explore-history {
+  margin-top: 36px;
+}
+
+.explore-history h2 {
+  margin-bottom: 16px;
+}
+
+.explore-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.explore-history-item {
+  overflow: hidden;
+}
+
+.explore-history-toggle {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.explore-history-toggle:hover {
+  background: var(--paper-dark);
+}
+
+.explore-history-prompt {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.explore-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--ink-light);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.explore-history-chevron {
+  font-size: 0.65rem;
+  color: var(--ink-light);
+}
+
 .explore-reply {
-  padding: 28px 36px;
+  padding: 0 28px 28px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin: 0 24px;
 }
 
 .explore-reply h1,

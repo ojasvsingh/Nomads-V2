@@ -9,3 +9,4 @@ API.interceptors.request.use((config) => {
 })
 
 export const askExplore = (message) => API.post('/explore', { message })
+export const getExploreHistory = () => API.get('/explore')
