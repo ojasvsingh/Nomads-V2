@@ -9,6 +9,7 @@ import Memories from './pages/Memories'
 import Memory from './pages/Memory'
 import EditMemory from './pages/EditMemory'
 import Map from './pages/Map'
+import Explore from './pages/Explore'
 
 export default function App() {
   return (
@@ -47,6 +48,11 @@ export default function App() {
         <Route path="/map" element={
           <ProtectedRoute>
             <Map />
+          </ProtectedRoute>
+        } />
+        <Route path="/explore" element={
+          <ProtectedRoute>
+            <Explore />
           </ProtectedRoute>
         } />
       </Routes>

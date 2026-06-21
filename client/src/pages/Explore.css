@@ -1,0 +1,84 @@
+.explore-header {
+  margin-bottom: 28px;
+}
+
+.explore-subtitle {
+  color: var(--ink-light);
+  margin: 0;
+}
+
+.explore-form {
+  padding: 28px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.explore-submit {
+  align-self: flex-start;
+}
+
+.explore-loading {
+  padding: 24px 28px;
+  color: var(--ink-light);
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.explore-reply {
+  padding: 28px 36px;
+}
+
+.explore-reply h1,
+.explore-reply h2,
+.explore-reply h3 {
+  font-family: var(--font-heading);
+  color: var(--ink);
+  margin-top: 1.2em;
+}
+
+.explore-reply h1:first-child,
+.explore-reply h2:first-child,
+.explore-reply h3:first-child {
+  margin-top: 0;
+}
+
+.explore-reply p {
+  line-height: 1.7;
+}
+
+.explore-reply ul,
+.explore-reply ol {
+  padding-left: 22px;
+  line-height: 1.8;
+}
+
+.explore-reply table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+
+.explore-reply th,
+.explore-reply td {
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  text-align: left;
+}
+
+.explore-reply th {
+  background: var(--paper-dark);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.explore-reply strong {
+  color: var(--ink);
+}
+
+.explore-reply hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}

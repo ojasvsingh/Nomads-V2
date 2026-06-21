@@ -71,6 +71,7 @@ export default function Dashboard() {
         <Link to="/memories/create" className="btn btn-primary">+ Add Memory</Link>
         <Link to="/map" className="btn btn-secondary">View Map</Link>
         <Link to="/memories" className="btn btn-secondary">View All Memories</Link>
+        <Link to="/explore" className="btn btn-secondary">✈ Explore Trips</Link>
       </div>
 
       <section className="dashboard-recent">

@@ -28,6 +28,7 @@ export default function Navbar() {
             <NavLink to="/memories" end className={linkClass}>Memories</NavLink>
             <NavLink to="/memories/create" end className={linkClass}>New Memory</NavLink>
             <NavLink to="/map" end className={linkClass}>Map</NavLink>
+            <NavLink to="/explore" end className={linkClass}>Explore</NavLink>
             <button className="btn btn-secondary btn-sm" onClick={handleLogout}>Logout</button>
           </>
         ) : (
