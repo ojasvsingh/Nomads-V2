@@ -11,6 +11,12 @@ API.interceptors.request.use((config) => {
   return config
 })
 
+export const uploadPhotos = (files) => {
+  const formData = new FormData()
+  files.forEach(file => formData.append('photos', file))
+  return API.post('/upload', formData)
+}
+
 export const createMemory = (data) => API.post('/memories', data)
 export const getMemories = () => API.get('/memories')
 export const getMemoriesByCountry = (countryCode) => API.get(`/memories/country/${encodeURIComponent(countryCode)}`)

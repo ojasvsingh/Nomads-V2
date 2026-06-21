@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { COUNTRY_LIST } from '../utils/countries'
+import { uploadPhotos } from '../api/memories'
 import './MemoryForm.css'
 
 const TODAY = new Date().toISOString().split('T')[0]
@@ -12,36 +13,58 @@ export default function MemoryForm({ initialValues, onSubmit, submitLabel, error
     description: initialValues?.description || '',
     isPublic: initialValues?.isPublic ?? true
   })
-  const [photos, setPhotos] = useState(initialValues?.photos?.length ? initialValues.photos : [''])
+
+  // existing URLs (populated in edit mode from saved memory)
+  const [existingPhotos, setExistingPhotos] = useState(
+    initialValues?.photos || []
+  )
+  // new local files selected by the user
+  const [newFiles, setNewFiles] = useState([]) // [{ file: File, preview: string }]
+
   const [submitting, setSubmitting] = useState(false)
+  const fileInputRef = useRef(null)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
   }
 
-  const handlePhotoChange = (index, value) => {
-    setPhotos((prev) => prev.map((p, i) => (i === index ? value : p)))
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files)
+    const entries = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }))
+    setNewFiles(prev => [...prev, ...entries])
+    e.target.value = ''
   }
 
-  const addPhotoField = () => setPhotos((prev) => [...prev, ''])
-  const removePhotoField = (index) => setPhotos((prev) => prev.filter((_, i) => i !== index))
+  const removeExisting = (index) => {
+    setExistingPhotos(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const removeNew = (index) => {
+    URL.revokeObjectURL(newFiles[index].preview)
+    setNewFiles(prev => prev.filter((_, i) => i !== index))
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSubmitting(true)
-    const country = COUNTRY_LIST.find((c) => c.code === form.countryCode)?.name || ''
-    const data = {
-      ...form,
-      country,
-      photos: photos.map((p) => p.trim()).filter(Boolean)
-    }
     try {
-      await onSubmit(data)
+      let photoUrls = [...existingPhotos]
+      if (newFiles.length > 0) {
+        const res = await uploadPhotos(newFiles.map(f => f.file))
+        photoUrls = [...photoUrls, ...res.data.urls]
+      }
+      const country = COUNTRY_LIST.find((c) => c.code === form.countryCode)?.name || ''
+      await onSubmit({ ...form, country, photos: photoUrls })
     } finally {
       setSubmitting(false)
     }
   }
+
+  const totalPhotos = existingPhotos.length + newFiles.length
 
   return (
     <form className="memory-form" onSubmit={handleSubmit}>
@@ -96,26 +119,36 @@ export default function MemoryForm({ initialValues, onSubmit, submitLabel, error
       </div>
 
       <div className="field">
-        <label>Photos</label>
-        <div className="memory-form-photos">
-          {photos.map((url, i) => (
-            <div className="memory-form-photo-row" key={i}>
-              <input
-                type="url"
-                value={url}
-                placeholder="https://example.com/photo.jpg"
-                onChange={(e) => handlePhotoChange(i, e.target.value)}
-              />
-              {photos.length > 1 && (
-                <button type="button" className="btn btn-secondary btn-sm" onClick={() => removePhotoField(i)}>
-                  Remove
-                </button>
-              )}
+        <label>Photos {totalPhotos > 0 && <span className="photo-count">({totalPhotos})</span>}</label>
+        <div className="photo-picker">
+          {existingPhotos.map((url, i) => (
+            <div key={`ex-${i}`} className="photo-thumb">
+              <img src={url} alt="" />
+              <button type="button" className="photo-remove" onClick={() => removeExisting(i)}>×</button>
             </div>
           ))}
-          <button type="button" className="btn btn-secondary btn-sm memory-form-add-photo" onClick={addPhotoField}>
-            + Add Photo URL
+          {newFiles.map((entry, i) => (
+            <div key={`new-${i}`} className="photo-thumb">
+              <img src={entry.preview} alt="" />
+              <button type="button" className="photo-remove" onClick={() => removeNew(i)}>×</button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="photo-add-btn"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <span className="photo-add-icon">+</span>
+            <span>Add Photos</span>
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+          />
         </div>
       </div>
 
