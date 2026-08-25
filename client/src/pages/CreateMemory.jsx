@@ -9,8 +9,8 @@ export default function CreateMemory() {
   const location = useLocation()
   const [error, setError] = useState(null)
 
-  const initialValues = location.state?.countryCode
-    ? { countryCode: location.state.countryCode }
+  const initialValues = (location.state?.countryCode || location.state?.tripId)
+    ? { countryCode: location.state.countryCode, tripId: location.state.tripId }
     : undefined
 
   const handleSubmit = async (data) => {

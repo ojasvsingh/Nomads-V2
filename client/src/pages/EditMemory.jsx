@@ -64,9 +64,11 @@ export default function EditMemory() {
             title: memory.title,
             countryCode: memory.countryCode,
             visitedAt: memory.visitedAt?.split('T')[0],
+            visitedAtEnd: memory.visitedAtEnd?.split('T')[0] || '',
             description: memory.description || '',
             photos: memory.photos || [],
-            isPublic: memory.isPublic
+            isPublic: memory.isPublic,
+            tripId: memory.tripId
           }}
           onSubmit={handleSubmit}
           submitLabel="Update Memory"

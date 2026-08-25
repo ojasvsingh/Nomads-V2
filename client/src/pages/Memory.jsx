@@ -68,7 +68,15 @@ export default function Memory() {
                 month: 'long',
                 day: 'numeric'
               })}
+              {memory.visitedAtEnd && ` – ${new Date(memory.visitedAtEnd).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}`}
             </p>
+            {memory.tripId && (
+              <Link to={`/trips/${memory.tripId}`} className="memory-trip-link">Part of a trip →</Link>
+            )}
             {!memory.isPublic && <span className="memory-private-badge">Private</span>}
           </div>
           <div className="memory-detail-actions">

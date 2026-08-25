@@ -51,7 +51,7 @@ export default function Explore() {
       <header className="explore-header">
         <h1>Explore</h1>
         <p className="explore-subtitle">
-          Describe your dream trip and get a personalised plan based on where you've already been.
+          Describe your dream trip and get a personalised plan based on what you like.
         </p>
       </header>
 

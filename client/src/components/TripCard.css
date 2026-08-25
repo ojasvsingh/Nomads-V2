@@ -1,0 +1,74 @@
+.trip-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+}
+
+.trip-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.trip-card-photo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--paper-dark);
+  overflow: hidden;
+}
+
+.trip-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.trip-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(138, 139, 92, 0.35), transparent 60%),
+    linear-gradient(135deg, var(--paper-dark), var(--border));
+}
+
+.trip-card-caption {
+  padding: 14px 16px 18px;
+}
+
+.trip-card-caption h3 {
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.trip-card-meta {
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  margin: 0 0 2px;
+}
+
+.trip-card-date {
+  font-size: 0.82rem;
+  color: var(--ink-light);
+  margin: 0 0 6px;
+  font-style: italic;
+}
+
+.trip-card-count {
+  font-size: 0.78rem;
+  color: var(--olive);
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}

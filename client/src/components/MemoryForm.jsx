@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { COUNTRY_LIST } from '../utils/countries'
 import { uploadPhotos } from '../api/memories'
+import { getTrips } from '../api/trips'
 import './MemoryForm.css'
 
 const TODAY = new Date().toISOString().split('T')[0]
@@ -10,8 +11,10 @@ export default function MemoryForm({ initialValues, onSubmit, submitLabel, error
     title: initialValues?.title || '',
     countryCode: initialValues?.countryCode || '',
     visitedAt: initialValues?.visitedAt || '',
+    visitedAtEnd: initialValues?.visitedAtEnd || '',
     description: initialValues?.description || '',
-    isPublic: initialValues?.isPublic ?? true
+    isPublic: initialValues?.isPublic ?? true,
+    tripId: initialValues?.tripId ? String(initialValues.tripId) : ''
   })
 
   // existing URLs (populated in edit mode from saved memory)
@@ -23,6 +26,28 @@ export default function MemoryForm({ initialValues, onSubmit, submitLabel, error
 
   const [submitting, setSubmitting] = useState(false)
   const fileInputRef = useRef(null)
+
+  const [trips, setTrips] = useState([])
+  const [tripSort, setTripSort] = useState('country')
+
+  useEffect(() => {
+    getTrips().then((res) => setTrips(res.data)).catch(() => {})
+  }, [])
+
+  const sortedTrips = useMemo(() => {
+    const list = [...trips]
+    if (tripSort === 'country' && form.countryCode) {
+      list.sort((a, b) => {
+        const aMatch = a.countryCode === form.countryCode ? 0 : 1
+        const bMatch = b.countryCode === form.countryCode ? 0 : 1
+        if (aMatch !== bMatch) return aMatch - bMatch
+        return new Date(b.startDate) - new Date(a.startDate)
+      })
+    } else {
+      list.sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+    }
+    return list
+  }, [trips, tripSort, form.countryCode])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -58,7 +83,7 @@ export default function MemoryForm({ initialValues, onSubmit, submitLabel, error
         photoUrls = [...photoUrls, ...res.data.urls]
       }
       const country = COUNTRY_LIST.find((c) => c.code === form.countryCode)?.name || ''
-      await onSubmit({ ...form, country, photos: photoUrls })
+      await onSubmit({ ...form, country, photos: photoUrls, tripId: form.tripId || null })
     } finally {
       setSubmitting(false)
     }
@@ -105,6 +130,48 @@ export default function MemoryForm({ initialValues, onSubmit, submitLabel, error
             required
           />
         </div>
+      </div>
+
+      <div className="memory-form-row">
+        <div className="field">
+          <label htmlFor="visitedAtEnd">End Date <span className="photo-count">(optional, for multi-day)</span></label>
+          <input
+            id="visitedAtEnd"
+            name="visitedAtEnd"
+            type="date"
+            value={form.visitedAtEnd}
+            min={form.visitedAt || undefined}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+
+      <div className="field">
+        <label htmlFor="tripId">Add to Trip</label>
+        <div className="trip-sort-toggle">
+          <button
+            type="button"
+            className={tripSort === 'country' ? 'active' : ''}
+            onClick={() => setTripSort('country')}
+          >
+            Match country
+          </button>
+          <button
+            type="button"
+            className={tripSort === 'recent' ? 'active' : ''}
+            onClick={() => setTripSort('recent')}
+          >
+            Most recent
+          </button>
+        </div>
+        <select id="tripId" name="tripId" value={form.tripId} onChange={handleChange}>
+          <option value="">None / Standalone</option>
+          {sortedTrips.map((trip) => (
+            <option key={trip.id} value={trip.id}>
+              {trip.name} · {trip.country} · {new Date(trip.startDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="field">

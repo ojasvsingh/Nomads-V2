@@ -1,0 +1,126 @@
+.trip-detail {
+  padding: 36px;
+  overflow: hidden;
+}
+
+.trip-cover {
+  margin: -36px -36px 24px;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  background: var(--paper-dark);
+}
+
+.trip-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.trip-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+}
+
+.trip-detail-title-group h1 {
+  margin-bottom: 6px;
+}
+
+.trip-detail-meta {
+  color: var(--ink-light);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.trip-detail-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.trip-edit-form {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+}
+
+.trip-cover-thumb {
+  position: relative;
+  width: 160px;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.trip-cover-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.trip-edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.trip-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.trip-tabs button {
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
+.trip-tabs button.active {
+  background: var(--paper-dark);
+  color: var(--ink);
+}
+
+.trip-add-memory {
+  margin-left: auto;
+}
+
+.trip-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.trip-media-grid img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.trip-media-grid img:hover {
+  transform: scale(1.03);
+}
+
+.trip-empty {
+  color: var(--ink-light);
+}

@@ -8,6 +8,9 @@ import CreateMemory from './pages/CreateMemory'
 import Memories from './pages/Memories'
 import Memory from './pages/Memory'
 import EditMemory from './pages/EditMemory'
+import Trips from './pages/Trips'
+import Trip from './pages/Trip'
+import CreateTrip from './pages/CreateTrip'
 import Map from './pages/Map'
 import Explore from './pages/Explore'
 
@@ -43,6 +46,21 @@ export default function App() {
         <Route path="/memories/:id" element={
           <ProtectedRoute>
             <Memory />
+          </ProtectedRoute>
+        } />
+        <Route path="/trips/new" element={
+          <ProtectedRoute>
+            <CreateTrip />
+          </ProtectedRoute>
+        } />
+        <Route path="/trips/:id" element={
+          <ProtectedRoute>
+            <Trip />
+          </ProtectedRoute>
+        } />
+        <Route path="/trips" element={
+          <ProtectedRoute>
+            <Trips />
           </ProtectedRoute>
         } />
         <Route path="/map" element={

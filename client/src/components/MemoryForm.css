@@ -101,6 +101,31 @@
   color: var(--amber);
 }
 
+.trip-sort-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.trip-sort-toggle button {
+  background: var(--paper);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-light);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.trip-sort-toggle button.active {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #fff;
+}
+
 .memory-form-toggle {
   display: flex;
   align-items: center;
