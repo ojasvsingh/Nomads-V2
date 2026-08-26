@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getTrip, updateTrip, deleteTrip } from '../api/trips'
 import { uploadPhotos } from '../api/memories'
-import { COUNTRY_LIST, getFlagEmoji } from '../utils/countries'
+import { getFlagEmoji, getCountryName } from '../utils/countries'
 import MemoryCard from '../components/MemoryCard'
+import CountryMultiSelect from '../components/CountryMultiSelect'
 import './Trip.css'
 
 function formatDate(date) {
@@ -40,7 +41,7 @@ export default function Trip() {
   const startEditing = () => {
     setForm({
       name: trip.name,
-      countryCode: trip.countryCode,
+      countryCodes: trip.countryCodes || [],
       startDate: trip.startDate.split('T')[0],
       endDate: trip.endDate.split('T')[0],
       coverPhoto: trip.coverPhoto || ''
@@ -67,11 +68,14 @@ export default function Trip() {
 
   const handleSave = async (e) => {
     e.preventDefault()
-    setSaving(true)
     setError(null)
+    if (form.countryCodes.length === 0) {
+      setError('Select at least one country')
+      return
+    }
+    setSaving(true)
     try {
-      const country = COUNTRY_LIST.find((c) => c.code === form.countryCode)?.name || ''
-      const res = await updateTrip(id, { ...form, country })
+      const res = await updateTrip(id, form)
       setTrip((prev) => ({ ...prev, ...res.data }))
       setEditing(false)
     } catch (err) {
@@ -127,7 +131,11 @@ export default function Trip() {
             <div className="trip-detail-title-group">
               <h1>{trip.name}</h1>
               <p className="trip-detail-meta">
-                {getFlagEmoji(trip.countryCode)} {trip.country} ·{' '}
+                {(trip.countryCodes || []).map((code) => (
+                  <span key={code} className="trip-detail-country">
+                    {getFlagEmoji(code)} {getCountryName(code)}
+                  </span>
+                ))} ·{' '}
                 {formatDate(trip.startDate)} – {formatDate(trip.endDate)}
               </p>
             </div>
@@ -143,15 +151,12 @@ export default function Trip() {
               <input id="name" name="name" value={form.name} onChange={handleChange} required />
             </div>
 
-            <div className="memory-form-row">
-              <div className="field">
-                <label htmlFor="countryCode">Country</label>
-                <select id="countryCode" name="countryCode" value={form.countryCode} onChange={handleChange} required>
-                  {COUNTRY_LIST.map((c) => (
-                    <option key={c.code} value={c.code}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
+            <div className="field">
+              <label>Countries</label>
+              <CountryMultiSelect
+                value={form.countryCodes}
+                onChange={(countryCodes) => setForm((prev) => ({ ...prev, countryCodes }))}
+              />
             </div>
 
             <div className="memory-form-row">
@@ -194,7 +199,11 @@ export default function Trip() {
               <button className={tab === 'media' ? 'active' : ''} onClick={() => setTab('media')}>
                 Media ({media.length})
               </button>
-              <Link to="/memories/create" state={{ tripId: trip.id, countryCode: trip.countryCode }} className="btn btn-secondary trip-add-memory">
+              <Link
+                to="/memories/create"
+                state={{ tripId: trip.id, countryCode: trip.countryCodes?.[0] }}
+                className="btn btn-secondary trip-add-memory"
+              >
                 + Add Memory
               </Link>
             </div>

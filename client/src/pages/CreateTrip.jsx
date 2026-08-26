@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createTrip } from '../api/trips'
-import { COUNTRY_LIST } from '../utils/countries'
+import CountryMultiSelect from '../components/CountryMultiSelect'
 import './MemoryFormPage.css'
 
 export default function CreateTrip() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', countryCode: '', startDate: '', endDate: '' })
+  const [form, setForm] = useState({ name: '', startDate: '', endDate: '' })
+  const [countryCodes, setCountryCodes] = useState([])
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -18,10 +19,13 @@ export default function CreateTrip() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
+    if (countryCodes.length === 0) {
+      setError('Select at least one country')
+      return
+    }
     setSubmitting(true)
     try {
-      const country = COUNTRY_LIST.find((c) => c.code === form.countryCode)?.name || ''
-      const res = await createTrip({ ...form, country })
+      const res = await createTrip({ ...form, countryCodes })
       navigate(`/trips/${res.data.id}`)
     } catch (err) {
       setError(err.response?.data?.error || 'Something went wrong')
@@ -47,21 +51,14 @@ export default function CreateTrip() {
               name="name"
               value={form.name}
               onChange={handleChange}
-              placeholder="Backpacking Argentina"
+              placeholder="Backpacking South America"
               required
             />
           </div>
 
-          <div className="memory-form-row">
-            <div className="field">
-              <label htmlFor="countryCode">Country</label>
-              <select id="countryCode" name="countryCode" value={form.countryCode} onChange={handleChange} required>
-                <option value="" disabled>Select a country…</option>
-                {COUNTRY_LIST.map((c) => (
-                  <option key={c.code} value={c.code}>{c.name}</option>
-                ))}
-              </select>
-            </div>
+          <div className="field">
+            <label>Countries</label>
+            <CountryMultiSelect value={countryCodes} onChange={setCountryCodes} />
           </div>
 
           <div className="memory-form-row">

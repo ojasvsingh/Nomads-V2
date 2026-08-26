@@ -1,0 +1,35 @@
+.country-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.country-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--paper-dark);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 5px 8px 5px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.country-chip button {
+  background: none;
+  border: none;
+  color: var(--ink-light);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.country-chip button:hover {
+  color: var(--terracotta-dark);
+}

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { COUNTRY_LIST } from '../utils/countries'
+import { COUNTRY_LIST, getCountryName } from '../utils/countries'
 import { uploadPhotos } from '../api/memories'
 import { getTrips } from '../api/trips'
 import './MemoryForm.css'
@@ -38,8 +38,8 @@ export default function MemoryForm({ initialValues, onSubmit, submitLabel, error
     const list = [...trips]
     if (tripSort === 'country' && form.countryCode) {
       list.sort((a, b) => {
-        const aMatch = a.countryCode === form.countryCode ? 0 : 1
-        const bMatch = b.countryCode === form.countryCode ? 0 : 1
+        const aMatch = a.countryCodes?.includes(form.countryCode) ? 0 : 1
+        const bMatch = b.countryCodes?.includes(form.countryCode) ? 0 : 1
         if (aMatch !== bMatch) return aMatch - bMatch
         return new Date(b.startDate) - new Date(a.startDate)
       })
@@ -168,7 +168,7 @@ export default function MemoryForm({ initialValues, onSubmit, submitLabel, error
           <option value="">None / Standalone</option>
           {sortedTrips.map((trip) => (
             <option key={trip.id} value={trip.id}>
-              {trip.name} · {trip.country} · {new Date(trip.startDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })}
+              {trip.name} · {(trip.countryCodes || []).map(getCountryName).join(', ')} · {new Date(trip.startDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })}
             </option>
           ))}
         </select>

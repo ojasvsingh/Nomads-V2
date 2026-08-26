@@ -27,18 +27,17 @@ model User {
 }
 
 model Trip {
-  id          Int      @id @default(autoincrement())
-  name        String
-  country     String
-  countryCode String
-  startDate   DateTime
-  endDate     DateTime
-  coverPhoto  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  memories    Memory[]
+  id           Int      @id @default(autoincrement())
+  name         String
+  countryCodes String[]
+  startDate    DateTime
+  endDate      DateTime
+  coverPhoto   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  memories     Memory[]
 }
 
 model Memory {

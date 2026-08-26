@@ -1,10 +1,10 @@
 const prisma = require('../lib/prisma')
 
-//creates a new trip with name, country and date range, saves it to db with user id from the middleware auth
+//creates a new trip with name, countries and date range, saves it to db with user id from the middleware auth
 exports.createTrip = async (req, res) => {
-  const { name, country, countryCode, startDate, endDate, coverPhoto } = req.body
-  if (!name || !country || !countryCode || !startDate || !endDate)
-    return res.status(400).json({ error: 'Name, country, country code, start date and end date are required' })
+  const { name, countryCodes, startDate, endDate, coverPhoto } = req.body
+  if (!name || !Array.isArray(countryCodes) || countryCodes.length === 0 || !startDate || !endDate)
+    return res.status(400).json({ error: 'Name, at least one country, start date and end date are required' })
 
   if (new Date(endDate) < new Date(startDate))
     return res.status(400).json({ error: 'End date cannot be before start date' })
@@ -13,8 +13,7 @@ exports.createTrip = async (req, res) => {
     const trip = await prisma.trip.create({
       data: {
         name,
-        country,
-        countryCode,
+        countryCodes,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         coverPhoto: coverPhoto || null,
@@ -59,7 +58,7 @@ exports.getTrip = async (req, res) => {
 
 //updates a trip based on the id of the trip and user
 exports.updateTrip = async (req, res) => {
-  const { name, country, countryCode, startDate, endDate, coverPhoto } = req.body
+  const { name, countryCodes, startDate, endDate, coverPhoto } = req.body
   try {
     const trip = await prisma.trip.findUnique({
       where: { id: parseInt(req.params.id) }
@@ -67,6 +66,9 @@ exports.updateTrip = async (req, res) => {
     if (!trip) return res.status(404).json({ error: 'Trip not found' })
     if (trip.userId !== req.user.id)
       return res.status(403).json({ error: 'Not authorized' })
+
+    if (countryCodes !== undefined && (!Array.isArray(countryCodes) || countryCodes.length === 0))
+      return res.status(400).json({ error: 'At least one country is required' })
 
     const nextStart = startDate ? new Date(startDate) : trip.startDate
     const nextEnd = endDate ? new Date(endDate) : trip.endDate
@@ -77,8 +79,7 @@ exports.updateTrip = async (req, res) => {
       where: { id: parseInt(req.params.id) },
       data: {
         name,
-        country,
-        countryCode,
+        countryCodes,
         startDate: startDate ? nextStart : undefined,
         endDate: endDate ? nextEnd : undefined,
         coverPhoto

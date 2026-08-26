@@ -38,6 +38,10 @@
   margin: 0;
 }
 
+.trip-detail-country:not(:last-of-type)::after {
+  content: ", ";
+}
+
 .trip-detail-actions {
   display: flex;
   gap: 10px;

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
+import logo from '../assets/Nomads_logo2TB.jpeg'
 import './Navbar.css'
 
 export default function Navbar() {
@@ -28,8 +29,7 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <Link to={token ? '/dashboard' : '/login'} className="navbar-brand">
-        <span className="navbar-brand-icon" aria-hidden="true">🧭</span>
-        Nomads
+        <img src={logo} alt="Nomads" className="navbar-brand-logo" />
       </Link>
 
       <nav className="navbar-links">
