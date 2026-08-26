@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import logo from '../assets/Nomads_logo2TB.jpeg'
+import logo from '../assets/Nomads_logo2.jpeg'
 import './Navbar.css'
 
 export default function Navbar() {
